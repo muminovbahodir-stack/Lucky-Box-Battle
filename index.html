@@ -2,99 +2,99 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Lucky Box Battle</title>
+<title>Lucky Tap Battle</title>
 <style>
-body {
+body{
   margin:0;
   background:#0f172a;
   color:white;
-  font-family:Arial;
   text-align:center;
+  font-family:Arial;
 }
-button {
-  padding:12px;
-  margin:5px;
+#mainBtn{
+  margin-top:50px;
+  padding:20px;
+  font-size:22px;
+  border-radius:20px;
   border:none;
-  border-radius:10px;
+  background:#22d3ee;
   font-weight:bold;
 }
 </style>
 </head>
 <body>
 
-<h2>🎁 Lucky Box Battle</h2>
+<h2>🎁 Lucky Tap Battle</h2>
 
 <p>💰 Монеты: <span id="coins">100</span></p>
+<p id="info">Нажми чтобы начать</p>
 
-<button onclick="openBox()">Открыть коробку (50)</button>
-<button onclick="fight()">Бой</button>
-
-<h3>Твой персонаж:</h3>
-<p id="hero">нет</p>
-
-<h3>Враг:</h3>
-<p id="enemy">-</p>
+<button id="mainBtn" onclick="tap()">TAP</button>
 
 <script>
 let coins = 100;
 let hero = null;
+let state = "box"; // box → fight
 
 const heroes = [
   {name:"Кот", power:5, chance:50},
   {name:"Робот", power:10, chance:30},
   {name:"Дракон", power:20, chance:15},
-  {name:"Бог", power:50, chance:5}
+  {name:"БОГ", power:50, chance:5}
 ];
 
-function updateUI(){
+function updateUI(text){
   document.getElementById("coins").innerText = coins;
-  document.getElementById("hero").innerText = hero ? hero.name + " (сила " + hero.power + ")" : "нет";
+  document.getElementById("info").innerText = text;
 }
 
-function openBox(){
-  if(coins < 50){
-    alert("Нет монет!");
-    return;
-  }
-
-  coins -= 50;
-
+function getHero(){
   let rand = Math.random()*100;
   let sum = 0;
-
   for(let h of heroes){
     sum += h.chance;
-    if(rand <= sum){
-      hero = h;
-      alert("Выпал: " + h.name);
-      break;
-    }
+    if(rand <= sum) return h;
   }
-
-  updateUI();
 }
 
-function fight(){
-  if(!hero){
-    alert("Сначала открой коробку!");
+function tap(){
+
+  // 1. ОТКРЫВАЕМ КОРОБКУ
+  if(state === "box"){
+
+    if(coins < 50){
+      updateUI("Нет монет!");
+      return;
+    }
+
+    coins -= 50;
+
+    hero = getHero();
+
+    updateUI("Выпал: " + hero.name + " (сила " + hero.power + ")");
+
+    state = "fight";
     return;
   }
 
-  let enemyPower = Math.floor(Math.random()*40)+5;
-  document.getElementById("enemy").innerText = "Сила врага: " + enemyPower;
+  // 2. БОЙ
+  if(state === "fight"){
 
-  if(hero.power >= enemyPower){
-    let reward = Math.floor(Math.random()*50)+20;
-    coins += reward;
-    alert("Победа! +" + reward);
-  } else {
-    alert("Проиграл 😢");
+    let enemyPower = Math.floor(Math.random()*40)+5;
+
+    if(hero.power >= enemyPower){
+      let reward = Math.floor(Math.random()*50)+20;
+      coins += reward;
+      updateUI("Победа! +" + reward);
+    } else {
+      updateUI("Проиграл 😢 (враг " + enemyPower + ")");
+    }
+
+    state = "box";
   }
-
-  updateUI();
 }
 
-updateUI();
+updateUI("Нажми чтобы открыть коробку");
 </script>
 
 </body>
