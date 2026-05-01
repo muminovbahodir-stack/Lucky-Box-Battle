@@ -13,8 +13,8 @@ body{
 }
 #mainBtn{
   margin-top:50px;
-  padding:20px;
-  font-size:22px;
+  padding:22px;
+  font-size:24px;
   border-radius:20px;
   border:none;
   background:#22d3ee;
@@ -26,15 +26,13 @@ body{
 
 <h2>🎁 Lucky Tap Battle</h2>
 
-<p>💰 Монеты: <span id="coins">100</span></p>
-<p id="info">Нажми чтобы начать</p>
+<p id="info">Нажми, чтобы открыть коробку</p>
 
 <button id="mainBtn" onclick="tap()">TAP</button>
 
 <script>
-let coins = 100;
 let hero = null;
-let state = "box"; // box → fight
+let state = "box";
 
 const heroes = [
   {name:"Кот", power:5, chance:50},
@@ -44,13 +42,13 @@ const heroes = [
 ];
 
 function updateUI(text){
-  document.getElementById("coins").innerText = coins;
   document.getElementById("info").innerText = text;
 }
 
 function getHero(){
-  let rand = Math.random()*100;
+  let rand = Math.random() * 100;
   let sum = 0;
+
   for(let h of heroes){
     sum += h.chance;
     if(rand <= sum) return h;
@@ -58,43 +56,25 @@ function getHero(){
 }
 
 function tap(){
-
-  // 1. ОТКРЫВАЕМ КОРОБКУ
   if(state === "box"){
-
-    if(coins < 50){
-      updateUI("Нет монет!");
-      return;
-    }
-
-    
-
     hero = getHero();
-
-    updateUI("Выпал: " + hero.name + " (сила " + hero.power + ")");
-
+    updateUI("Выпал: " + hero.name + " | сила " + hero.power + ". Нажми ещё раз для боя!");
     state = "fight";
     return;
   }
 
-  // 2. БОЙ
   if(state === "fight"){
-
-    let enemyPower = Math.floor(Math.random()*40)+5;
+    let enemyPower = Math.floor(Math.random() * 40) + 5;
 
     if(hero.power >= enemyPower){
-      let reward = Math.floor(Math.random()*50)+20;
-      coins += reward;
-      updateUI("Победа! +" + reward);
+      updateUI("✅ Победа! Враг: " + enemyPower + ". Нажми снова для новой коробки.");
     } else {
-      updateUI("Проиграл 😢 (враг " + enemyPower + ")");
+      updateUI("❌ Проиграл. Враг: " + enemyPower + ". Нажми снова для новой коробки.");
     }
 
     state = "box";
   }
 }
-
-updateUI("Нажми чтобы открыть коробку");
 </script>
 
 </body>
